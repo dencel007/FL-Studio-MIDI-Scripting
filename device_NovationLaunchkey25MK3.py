@@ -42,6 +42,11 @@ Pads = {
     'Pad16':0x2B
 }
 
+Device = {
+    'DSelect':0x33,
+    'DLock':0x34
+}
+
 EventNameT = ['Note Off', 'Note On ', 'Key Aftertouch', 'Control Change', 'Program Change', 'Channel Aftertouch', 'Pitch Bend', 'System Message']
               
 class LKMK3():
@@ -53,7 +58,7 @@ class LKMK3():
 
     def OnDeInit(self):
         print('deinit ready')
-
+        
     def OnMidiMsg(self, event):
         event.handled = False
         print ("{:X} {:X} {:2X} {}".format(event.status, event.data1, event.data2,  EventNameT[(event.status - 0x80) // 16] + ': '+  utils.GetNoteName(event.data1)))
@@ -112,9 +117,19 @@ class LKMK3():
             ui.right()
         
         #Global Transport
-        #if (GlobalMIDIChannel == 0xB) and (event.data1 == Pads['Pad12']) and (event.data2 == 0x7F):
-            #transport.globalTransport()
-            #event.handled = True
+        if (GlobalMIDIChannel == 0xB) and (event.data1 == Pads['Pad09']) and (event.data2 == 0x7F):
+            transport.globalTransport(midi.FPT_Metronome, True)
+        if (GlobalMIDIChannel == 0xB) and (event.data1 == Pads['Pad10']) and (event.data2 == 0x7F):
+            transport.globalTransport(midi.FPT_Overdub, True)
+        if (GlobalMIDIChannel == 0xB) and (event.data1 == Pads['Pad11']) and (event.data2 == 0x7F):
+            transport.globalTransport(midi.FPT_CountDown, True)        
+        if (GlobalMIDIChannel == 0xB) and (event.data1 == Pads['Pad12']) and (event.data2 == 0x7F):
+            transport.globalTransport(midi.FPT_TapTempo, True)
+            
+        #Window Focus
+        #if (GlobalMIDIChannel == 0xB) and (event.data1 == Device['DSelect']) and (event.data2 == 0x7F):
+            #print("Button
+            #transport.globalTransport(midi.FPT_MixerWindowJog, True)
 
 Launchkey = LKMK3()
 def OnInit():
